@@ -7,3 +7,4 @@ jinja2==3.1.2
 python-dotenv==1.0.0
 google-generativeai==0.3.2
 aiofiles==23.2.1
+genai>=0.1.17
