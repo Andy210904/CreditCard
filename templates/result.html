@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results for {{ evaluation.client_name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Evaluation Results: {{ evaluation.client_name }}</h1>
+    <p class="subtitle">{{ evaluation.evaluation_timestamp }}</p>
+    <div class="nav-links">
+        <a href="/" class="nav-link">← New Dashboard</a>
+        <a href="/history" class="nav-link">View History 📜</a>
+    </div>
+
+    <div class="results-grid">
+        {% set rule_eval = evaluation.rule_final_evaluation | lower %}
+        <div class="result-card">
+            <h2>⚙️ Rule Engine Risk</h2>
+            <div class="gauge-container">
+                <div class="gauge-arc"></div>
+                <div class="gauge-needle needle-{{ rule_eval }}"></div>
+                <div class="gauge-center-dot"></div>
+            </div>
+            <div class="gauge-label">{{ evaluation.rule_final_evaluation }}</div>
+        </div>
+        
+        {% set llm_eval = evaluation.llm_final_rating | lower %}
+        <div class="result-card">
+            <h2>🤖 Gemini LLM Risk</h2>
+            <div class="gauge-container">
+                <div class="gauge-arc"></div>
+                <div class="gauge-needle needle-{{ llm_eval }}"></div>
+                <div class="gauge-center-dot"></div>
+            </div>
+            <div class="gauge-label">{{ evaluation.llm_final_rating }}</div>
+        </div>
+    </div>
+
+    <div class="results-grid">
+        <div class="result-card">
+            <h2>⚙️ Rule-Based Factors</h2>
+            <table>
+                <thead><tr><th>Factor</th><th>Evaluation</th></tr></thead>
+                <tbody>
+                    {% for row in table_result_rule %}
+                    <tr>
+                        <td>{{ row.factor_name }}</td>
+                        <td><span class="badge {{ row.evaluation.lower() }}">{{ row.evaluation }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="result-card">
+            <h2>🤖 Gemini LLM Factors</h2>
+            <table>
+                <thead><tr><th>Factor</th><th>Evaluation</th></tr></thead>
+                <tbody>
+                    {% for factor, eval in llm_factor_breakdown.items() %}
+                    <tr>
+                        <td>{{ factor }}</td>
+                        <td><span class="badge {{ eval.lower() }}">{{ eval }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="result-card">
+        <h2>📄 Submitted Data</h2>
+        <pre>{{ evaluation.input_json | tojson(indent=4) }}</pre>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation History</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>📜 Evaluation History</h1>
+    <div class="header-links">
+        <a href="/" class="nav-link">← New Upload</a>
+    </div>
+
+    <div class="card">
+        {% if evaluations %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Client Name</th>
+                    <th>Rule Engine Result</th>
+                    <th>Gemini LLM Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for evaluation in evaluations %}
+                <tr>
+                    <td>{{ evaluation.evaluation_timestamp }}</td>
+                    <td>{{ evaluation.entity_name }}</td>
+                    <td><span class="final-eval">{{ evaluation.rule_final_evaluation or 'N/A' }}</span></td>
+                    <td><span class="final-eval">{{ evaluation.llm_final_rating or 'N/A' }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No evaluation history found. Upload a CSV to get started.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

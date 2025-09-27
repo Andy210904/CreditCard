@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation for {{ entity_name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🔬 Evaluation Results for: <strong>{{ entity_name }}</strong></h1>
+    <div class="header-links">
+        <a href="/" class="nav-link">← New Upload</a>
+        <a href="/history" class="nav-link">View History 📜</a>
+    </div>
+
+    <div class="results-grid">
+        <div class="card">
+            <h2>⚙️ Rule Engine Evaluation</h2>
+            {% if rule_output.final_evaluation %}
+                {% set rule_eval = rule_output.final_evaluation | lower %}
+                <div class="gauge-container">
+                    <div class="gauge-bar"></div>
+                    <div class="gauge-needle {{ 'low' if 'low' in rule_eval else 'medium' if 'medium' in rule_eval else 'high' }}"></div>
+                    <div class="gauge-center"></div>
+                    <div class="gauge-label low-label">Low</div>
+                    <div class="gauge-label medium-label">Medium</div>
+                    <div class="gauge-label high-label">High</div>
+                </div>
+                <h3 class="final-eval-text">{{ rule_output.final_evaluation }}</h3>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>🤖 Gemini LLM Evaluation</h2>
+            {% if llm_output.final_risk_rating %}
+                {% set llm_eval = llm_output.final_risk_rating | lower %}
+                 <div class="gauge-container">
+                    <div class="gauge-bar"></div>
+                    <div class="gauge-needle {{ 'low' if 'low' in llm_eval else 'medium' if 'medium' in llm_eval else 'high' }}"></div>
+                    <div class="gauge-center"></div>
+                    <div class="gauge-label low-label">Low</div>
+                    <div class="gauge-label medium-label">Medium</div>
+                    <div class="gauge-label high-label">High</div>
+                </div>
+                <h3 class="final-eval-text">{{ llm_output.final_risk_rating }}</h3>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="results-grid">
+        <div class="card">
+            <h4>⚙️ Rule Engine Factor Breakdown</h4>
+            {% if rule_output.factors %}
+            <table>
+                <thead><tr><th>Factor</th><th>Evaluation</th></tr></thead>
+                <tbody>
+                {% for row in rule_output.factors %}
+                    <tr>
+                        <td>{{ row.factor }}</td>
+                        <td><span class="badge {{ row.evaluation | lower }}">{{ row.evaluation }}</span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="error-text">No rule-based factors available.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h4>🤖 Gemini LLM Factor Breakdown</h4>
+            {% if llm_output.factor_breakdown %}
+            <table>
+                <thead><tr><th>Factor</th><th>Evaluation</th></tr></thead>
+                <tbody>
+                {% for factor, eval in llm_output.factor_breakdown.items() %}
+                    <tr>
+                        <td>{{ factor }}</td>
+                        <td><span class="badge {{ eval | lower }}">{{ eval }}</span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% elif llm_output.error %}
+             <p class="error-text"><b>Evaluation Failed:</b><br>{{ llm_output.error }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

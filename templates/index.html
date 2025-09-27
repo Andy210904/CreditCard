@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Risk Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>📊 Credit Risk Evaluation Dashboard</h1>
+    <div class="header-links">
+        <a href="/history" class="nav-link">View History 📜</a>
+    </div>
+
+    <div class="card">
+        <h2>Upload Client Data</h2>
+        <p>Upload a CSV file with an 'entity_name' column.</p>
+        <form method="post" action="/upload_csv" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" accept=".csv" required>
+            <button type="submit" class="btn">🚀 Upload & Display Dashboard</button>
+        </form>
+    </div>
+
+    {% if error_message %}
+    <div class="card error-card">
+        <h2>🚨 Error</h2>
+        <p>{{ error_message }}</p>
+    </div>
+    {% endif %}
+
+    {% if clients %}
+    <div class="card">
+        <h2>Client Dashboard</h2>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Client Name (entity_name)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for client in clients %}
+                <tr>
+                    <td>{{ client.entity_name }}</td>
+                    <td>
+                        <form action="/evaluate" method="post">
+                            <input type="hidden" name="row_index" value="{{ loop.index0 }}">
+                            <button type="submit" class="btn btn-evaluate">Evaluate</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>
