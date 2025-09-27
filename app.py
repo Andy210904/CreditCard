@@ -218,7 +218,9 @@ def apply_full_ruleset(data: dict):
 async def get_gemini_classification(data: dict):
     if not api_key: return {"error": "Gemini model is not configured. Check API key."}
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=CLASSIFICATION_RULES)
+        model = genai.GenerativeModel("gemini-2.5-flash", parameters={
+        "system_instruction": CLASSIFICATION_RULES
+    })
         clean_data = {k: v for k, v in data.items() if v is not None}
         prompt = f"Classify the credit risk based on this JSON data:\n{json.dumps(clean_data, indent=2)}"
         response = await model.generate_content_async(
@@ -296,8 +298,8 @@ async def login_page(request: Request):
 
 # ...existing code...
 
-if __name__ == "__main__":
-    import uvicorn
-    import os
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+# if __name__ == "__main__":
+#     import uvicorn
+#     import os
+#     port = int(os.environ.get("PORT", 8000))
+#     uvicorn.run("app:app", host="0.0.0.0", port=port)
