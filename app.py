@@ -9,7 +9,7 @@ import json
 import sqlite3
 from datetime import datetime
 import io
-import google.generativeai as genai
+# import google.generativeai as genai
 from dotenv import load_dotenv
 
 # ==============================
