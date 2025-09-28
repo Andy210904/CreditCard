@@ -9,7 +9,7 @@ import json
 import sqlite3
 from datetime import datetime
 import io
-# import google.generativeai as genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 # ==============================
@@ -215,41 +215,22 @@ def apply_full_ruleset(data: dict):
 # ==============================
 # Gemini API Call Function
 # ==============================
-import json
-from genai import GenerativeModel
-
 async def get_gemini_classification(data: dict):
-    if not api_key:
-        return {"error": "Gemini model is not configured. Check API key."}
-    
+    if not api_key: return {"error": "Gemini model is not configured. Check API key."}
     try:
-        # Initialize model without system_instruction
-        model = GenerativeModel("gemini-2.5-flash")
-        
-        # Clean data
+        model = genai.GenerativeModel("gemini-2.5-flash", system_instruction=CLASSIFICATION_RULES)
         clean_data = {k: v for k, v in data.items() if v is not None}
-        
-        # Create the prompt messages including system instruction
-        messages = [
-            {"role": "system", "content": CLASSIFICATION_RULES},
-            {"role": "user", "content": f"Classify the credit risk based on this JSON data:\n{json.dumps(clean_data, indent=2)}"}
-        ]
-        
-        # Generate response asynchronously
+        prompt = f"Classify the credit risk based on this JSON data:\n{json.dumps(clean_data, indent=2)}"
         response = await model.generate_content_async(
-            messages,
+            [prompt],
             generation_config={"response_mime_type": "application/json", "temperature": 0}
         )
-        
         return json.loads(response.text)
-    
     except Exception as e:
         raw_text = "N/A"
-        if 'response' in locals() and hasattr(response, 'text'):
-            raw_text = response.text
+        if 'response' in locals() and hasattr(response, 'text'): raw_text = response.text
         print(f"Gemini API Error: {e}. Raw Response: {raw_text}")
         return {"error": f"Gemini API error: {e}", "raw_response": raw_text}
-
 
 
 # ==============================
